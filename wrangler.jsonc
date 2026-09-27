@@ -1,0 +1,60 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "gitversary",
+  "main": "./src/index.ts",
+  "compatibility_date": "2026-09-26",
+  "routes": [
+    {
+      "pattern": "gitversary.andreruffert.com",
+      "custom_domain": true
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "gitversary",
+      "database_id": "791aa73f-f3fe-468e-ade5-7c1bad266a0b",
+      "migrations_dir": "./migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "IMAGES",
+      "bucket_name": "gitversary-images"
+    }
+  ],
+  "queues": {
+    "consumers": [
+      {
+        "queue": "gitversary-image-gen",
+        "max_batch_size": 1,
+        "max_batch_timeout": 5,
+        "max_retries": 0
+      }
+    ],
+    "producers": [
+      {
+        "binding": "IMAGE_QUEUE",
+        "queue": "gitversary-image-gen"
+      }
+    ]
+  },
+  "browser": {
+    "binding": "BROWSER"
+  },
+  "ratelimits": [
+    {
+      "name": "DEFAULT_RATE_LIMITER",
+      "namespace_id": "1778714686",
+      "simple": {
+        "limit": 50,
+        "period": 60
+      }
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "logs": { "head_sampling_rate": 1 },
+    "traces": { "enabled": true, "head_sampling_rate": 0.1 }
+  }
+}
