@@ -1,0 +1,10 @@
+@layer reset, base, global, components, pages;
+
+@import url("./reset.css") layer(reset);
+@import url("./base.css") layer(base);
+@import url("./global.css") layer(global);
+@import url("./components.css") layer(components);
+
+@import url("./pages/home.css") layer(pages);
+@import url("./pages/profile.css") layer(pages);
+@import url("./pages/about.css") layer(pages);

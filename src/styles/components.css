@@ -1,0 +1,110 @@
+/* -------------------------------------------------------------------------- */
+/* Buttons                                                                    */
+/* -------------------------------------------------------------------------- */
+
+.button {
+  min-height: 40px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--actions-inner-radius);
+  color: var(--color-text);
+  background: var(--color-surface);
+  font-size: 0.72rem;
+  font-weight: 650;
+  line-height: 1;
+  text-decoration: none;
+  text-wrap: nowrap;
+  cursor: pointer;
+  box-shadow:
+    0 1px 0 rgb(31 35 40 / 4%),
+    inset 0 1px 0 rgb(255 255 255 / 3%);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--color-border) 80%, var(--color-text));
+    background: var(--color-surface-raised);
+    box-shadow:
+      0 3px 8px rgb(31 35 40 / 7%),
+      inset 0 1px 0 rgb(255 255 255 / 3%);
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 3px rgb(31 35 40 / 8%);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-green);
+    outline-offset: 2px;
+  }
+
+  & svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  @media (max-width: 660px) {
+    min-height: 44px;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Primary                                                                    */
+/* -------------------------------------------------------------------------- */
+
+.button--primary {
+  color: var(--color-white);
+  border-color: var(--color-green);
+  background: var(--color-green);
+  box-shadow:
+    0 2px 5px color-mix(in srgb, var(--color-green) 22%, transparent),
+    inset 0 1px 0 rgb(255 255 255 / 8%);
+
+  &:hover {
+    color: var(--color-white);
+    border-color: var(--color-green-bright);
+    background: var(--color-green-bright);
+    box-shadow:
+      0 4px 12px color-mix(in srgb, var(--color-green) 24%, transparent),
+      inset 0 1px 0 rgb(255 255 255 / 10%);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Quiet                                                                      */
+/* -------------------------------------------------------------------------- */
+
+.button--quiet {
+  color: var(--color-muted);
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+
+  &:hover,
+  &:active {
+    color: var(--color-text);
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  &:hover {
+    background: color-mix(in srgb, var(--color-surface-raised) 70%, transparent);
+  }
+
+  &:active {
+    background: var(--color-surface-raised);
+  }
+
+  &:focus-visible {
+    outline-offset: 1px;
+  }
+}

@@ -1,0 +1,500 @@
+/* @import url('https://cdn.jsdelivr.net/npm/@fontsource-variable/inter@5.3.0/index.css'); */
+@import url("https://cdn.jsdelivr.net/npm/@fontsource-variable/mona-sans@5.3.0/index.css");
+@import url("https://cdn.jsdelivr.net/npm/@fontsource-variable/jetbrains-mono@5.3.0/index.css");
+
+/* ============================================================
+   OG IMAGE FOUNDATION
+   ============================================================ */
+
+:root {
+  --og-width: 1200px;
+  --og-height: 630px;
+
+  --og-bg: #07090d;
+  --og-surface: #0d1117;
+
+  --og-border: #30363d;
+  --og-border-subtle: #21262d;
+
+  --og-text: #f0f6fc;
+  --og-muted: #8b949e;
+
+  --og-green: #3fb950;
+  --og-green-bright: #56d364;
+  --og-purple: #a371f7;
+  --og-orange: #f0883e;
+
+  --og-watermark: rgb(240 246 252 / 5.5%);
+
+  --og-radius: 26px;
+
+  /* --og-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; */
+  /* --og-font-sans: 'Inter Variable', sans-serif; */
+  --og-font-sans: "Mona Sans Variable", sans-serif;
+  /* --og-font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace; */
+  --og-font-mono: "JetBrains Mono Variable", monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: var(--og-width);
+  height: var(--og-height);
+  margin: 0;
+  padding: 0;
+  /* overflow: hidden; */
+  background: var(--og-bg);
+}
+
+body {
+  font-family: var(--og-font-sans);
+  color: var(--og-text);
+}
+
+/* ============================================================
+   CANVAS
+   ============================================================ */
+
+.og-canvas {
+  position: relative;
+  display: flex;
+  width: var(--og-width);
+  height: var(--og-height);
+  overflow: hidden;
+  background: linear-gradient(135deg, #07090d 0%, #0d1117 100%);
+}
+
+/* ============================================================
+   BACKGROUND
+   Decorative layer — absolute positioning is intentional here.
+   ============================================================ */
+
+.og-background {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.og-background__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(35px);
+}
+
+.og-background__glow--green {
+  width: 860px;
+  height: 600px;
+  left: 500px;
+  top: -120px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(63, 185, 80, 0.2) 0%,
+    rgba(63, 185, 80, 0.07) 45%,
+    rgba(63, 185, 80, 0) 100%
+  );
+}
+
+.og-background__glow--purple {
+  width: 760px;
+  height: 520px;
+  left: -200px;
+  top: 260px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(163, 113, 247, 0.13) 0%,
+    rgba(163, 113, 247, 0) 100%
+  );
+}
+
+.og-background__grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.025;
+  background-image:
+    linear-gradient(rgba(240, 246, 252, 1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(240, 246, 252, 1) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ============================================================
+   CARD
+   ============================================================ */
+
+.og-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 1116px;
+  height: 546px;
+  margin: 42px;
+  overflow: hidden;
+  border: 1px solid var(--og-border);
+  border-radius: var(--og-radius);
+  background: var(--og-surface);
+}
+
+/* ============================================================
+   CARD DECORATIVE GLOWS
+   ============================================================ */
+
+.og-card__glow {
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(35px);
+  pointer-events: none;
+}
+
+.og-card__glow--green {
+  width: 540px;
+  height: 540px;
+  right: -80px;
+  top: -190px;
+  background: rgba(63, 185, 80, 0.055);
+}
+
+.og-card__glow--purple {
+  width: 440px;
+  height: 440px;
+  left: -40px;
+  bottom: -220px;
+  background: rgba(163, 113, 247, 0.035);
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+
+.og-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 72px;
+  padding: 0 25px;
+  border-bottom: 1px solid var(--og-border-subtle);
+}
+
+.og-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.og-brand__name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.og-header__meta {
+  margin-left: auto;
+  color: var(--og-muted);
+  font-family: var(--og-font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  line-height: 1;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+
+.og-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-block: 3rem;
+}
+
+/* ============================================================
+   STATUS
+   ============================================================ */
+
+.og-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--og-green-bright);
+  font-family: var(--og-font-mono);
+  font-size: 16px;
+  font-weight: 750;
+  letter-spacing: 0.105em;
+  line-height: 1;
+  white-space: nowrap;
+  text-transform: uppercase;
+  margin-block-end: 2rem;
+}
+
+.og-status::before,
+.og-status::after {
+  content: "";
+  width: 18px;
+  height: 1px;
+  flex: 0 0 18px;
+  background: rgba(86, 211, 100, 0.42);
+}
+
+/* ============================================================
+   GITVERSARY DEFAULT
+   ============================================================ */
+
+.og-default {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.og-default__title {
+  margin: 2.5rem 0 0;
+  font-size: 76px;
+  font-weight: 780;
+  line-height: 0.91;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+  text-align: center;
+  background: linear-gradient(135deg, #f0f6fc 0%, #f0f6fc 65%, #56d364 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.og-default__accent {
+  width: min(100%, 360px);
+  height: 1px;
+  margin-top: 51px;
+  border-radius: 1px;
+  /* background: linear-gradient(
+    135deg,
+    #3fb950 0%,
+    #a371f7 50%,
+    #3fb950 100%
+  ); */
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #3fb950 10%,
+    #a371f7 60%,
+    #3fb950 80%,
+    transparent
+  );
+
+  opacity: 0.4;
+}
+
+.og-default__description {
+  margin: 51px 0 0;
+  color: var(--og-muted);
+  font-size: 23px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   GITVERSARY PROFILE
+   ============================================================ */
+
+.og-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.og-profile__years {
+  margin-block-start: 2.5rem;
+  align-self: stretch;
+  text-align: center;
+  font-family: var(--og-font-sans);
+  font-size: 190px;
+  font-weight: 750;
+  line-height: 0.82;
+  letter-spacing: -0.05em;
+  text-indent: -0.05em;
+  background: linear-gradient(135deg, #f0f6fc 0%, #f0f6fc 65%, #56d364 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.og-profile__years-label {
+  color: var(--og-muted);
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  margin-block-start: 1rem;
+}
+
+.og-profile__years-label strong {
+  color: var(--og-text);
+  font-weight: 650;
+}
+
+.og-profile__user {
+  display: flex;
+  align-items: center;
+  margin-block-start: 2.5rem;
+  gap: 1rem;
+  position: absolute;
+  bottom: 25px;
+  left: 25px;
+}
+/* ============================================================
+   AVATAR
+   ============================================================ */
+
+.og-avatar {
+  width: 60px;
+  aspect-ratio: 1;
+  padding: 2px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3fb950 0%, #a371f7 50%, #3fb950 100%);
+}
+
+.og-avatar__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--og-surface);
+}
+
+.og-profile__username {
+  /* margin: .75rem 0 0; */
+  color: var(--og-muted);
+  font-family: var(--og-font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   WATERMARK
+   ============================================================ */
+
+.og-profile__watermark {
+  position: absolute;
+  right: -24px;
+  bottom: -38px;
+  z-index: 0;
+  margin: 0;
+  color: transparent;
+  font-size: 27rem;
+  font-weight: 900;
+  line-height: 0.72;
+  letter-spacing: -0.05em;
+  text-indent: -0.05em;
+  -webkit-text-stroke: 1px var(--og-watermark);
+  pointer-events: none;
+  user-select: none;
+  rotate: -5deg;
+}
+
+/* ============================================================
+   DECORATION
+   ============================================================ */
+
+.og-spark {
+  position: absolute;
+
+  z-index: 2;
+
+  width: 10px;
+  height: 10px;
+}
+
+.og-spark::before,
+.og-spark::after {
+  content: "";
+
+  position: absolute;
+
+  left: 4px;
+  top: 0;
+
+  width: 2px;
+  height: 10px;
+
+  border-radius: 2px;
+}
+
+.og-spark::after {
+  transform: rotate(90deg);
+}
+
+.og-spark--green {
+  left: 74px;
+  top: 133px;
+}
+
+.og-spark--green::before,
+.og-spark--green::after {
+  background: var(--og-green-bright);
+}
+
+.og-spark--purple {
+  right: 41px;
+  top: 108px;
+}
+
+.og-spark--purple::before,
+.og-spark--purple::after {
+  background: var(--og-purple);
+}
+
+.og-spark--orange {
+  right: 207px;
+  bottom: 107px;
+}
+
+.og-spark--orange::before,
+.og-spark--orange::after {
+  background: var(--og-orange);
+}
+
+.og-dot {
+  position: absolute;
+
+  z-index: 2;
+
+  border-radius: 50%;
+}
+
+.og-dot--purple {
+  left: 176px;
+  top: 101px;
+
+  width: 4px;
+  height: 4px;
+
+  background: var(--og-purple);
+}
+
+.og-dot--green {
+  right: 126px;
+  top: 75px;
+
+  width: 6px;
+  height: 6px;
+
+  background: var(--og-green);
+}
+
+.og-dot--orange {
+  left: 366px;
+  bottom: 111px;
+
+  width: 4px;
+  height: 4px;
+
+  background: var(--og-orange);
+}

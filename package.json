@@ -1,0 +1,35 @@
+{
+  "name": "gitversary",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "prebuild": "node ./scripts/build-info.js",
+    "build": "vite build",
+    "deploy": "npm run build && wrangler deploy",
+    "types": "wrangler types",
+    "check": "tsc --noEmit",
+    "test": "vitest run",
+    "format": "biome check --write"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.5.10",
+    "@cloudflare/vite-plugin": "1.54.1",
+    "@types/node": "26.3.0",
+    "typescript": "7.0.2",
+    "vite": "8.2.2",
+    "vitest": "4.1.11",
+    "wrangler": "4.126.0"
+  },
+  "dependencies": {
+    "@js-temporal/polyfill": "0.5.1",
+    "hono": "4.13.5",
+    "jose": "6.2.10",
+    "vite-ssr-components": "0.6.1"
+  },
+  "volta": {
+    "node": "26.10.0",
+    "npm": "12.1.0"
+  }
+}
