@@ -1,8 +1,8 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "gitversary",
-  "main": "./src/index.ts",
-  "compatibility_date": "2026-09-26",
+  "main": "./src/index.tsx",
+  "compatibility_date": "2026-09-02",
   "routes": [
     {
       "pattern": "gitversary.andreruffert.com",

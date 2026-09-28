@@ -145,21 +145,12 @@
 /* -------------------------------------------------------------------------- */
 
 html {
-  background: var(--color-bg);
-  min-height: 100%;
+  background-color: var(--color-bg);
 }
 
 body {
-  min-width: 320px;
-  min-height: 100vh;
-  margin: 0;
-  padding: 14px 0 0;
+  min-height: 100dvh;
   color: var(--color-text);
-  background: var(--color-bg);
-
-  @media (min-width: 40rem) {
-    padding-top: var(--space-8);
-  }
 
   &::before {
     position: fixed;

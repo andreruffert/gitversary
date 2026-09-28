@@ -41,7 +41,7 @@ describe('GET /', () => {
     const response = await app.request('/', {}, createTestEnv());
 
     expect(response.headers.get('Cache-Control')).toBe(
-      'public, max-age=300, stale-while-revalidate=3600',
+      'public, max-age=3600, stale-while-revalidate=86400',
     );
   });
 
@@ -103,7 +103,7 @@ describe('GET /about', () => {
     const response = await app.request('/about', {}, createTestEnv());
 
     expect(response.headers.get('Cache-Control')).toBe(
-      'public, max-age=300, stale-while-revalidate=3600',
+      'public, max-age=3600, stale-while-revalidate=86400',
     );
   });
 });

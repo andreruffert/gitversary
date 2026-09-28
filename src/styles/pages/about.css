@@ -7,10 +7,10 @@
 
   width: min(calc(100% - (var(--page-gutter) * 2)), var(--about-max-width));
   margin-inline: auto;
-  padding-block: var(--space-10) var(--space-12);
+  padding-block-start: var(--space-10);
 
   @media (min-width: 40rem) {
-    padding-block: var(--space-12);
+    padding-block-start: var(--space-12);
   }
 }
 
@@ -91,6 +91,10 @@
 
   &:not(:last-of-type) {
     border-bottom: 1px solid var(--color-border-subtle);
+  }
+
+  &:last-of-type {
+    padding-block-end: unset;
   }
 }
 

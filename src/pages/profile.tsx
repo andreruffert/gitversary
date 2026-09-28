@@ -1,5 +1,6 @@
 import { BrandMark } from '../components/brand-mark';
 import { Icon } from '../components/icons';
+import { APP_BASE_URL } from '../constants';
 import { getMilestoneData } from '../lib/milestones';
 import type { Profile } from '../lib/profiles';
 import { formatJoinedDate, formatNumber } from '../lib/utils';
@@ -160,6 +161,16 @@ export function ProfilePage({ profile, years, bskyShareUrl }: ProfilePageProps) 
             <span>Share</span>
           </a>
 
+          <clipboard-copy
+            value={`${APP_BASE_URL}/${profile.username}`}
+            tabindex="0"
+            role="button"
+            class="button"
+            data-clipboard-copy="Copied to clipboard."
+          >
+            <Icon name="link" /> Copy link
+          </clipboard-copy>
+
           <a
             href={profile.githubUrl}
             class="button button--quiet"
@@ -167,7 +178,7 @@ export function ProfilePage({ profile, years, bskyShareUrl }: ProfilePageProps) 
             rel="noopener noreferrer"
           >
             <Icon name="github" />
-            <span>View profile</span>
+            <span>View GitHub profile</span>
           </a>
         </div>
       </nav>

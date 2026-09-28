@@ -7,6 +7,11 @@
   margin-inline: auto;
   display: grid;
   gap: var(--section-gap);
+  padding-block-start: var(--space-5);
+
+  @media (min-width: 40rem) {
+    padding-block-start: var(--space-8);
+  }
 }
 
 /* -------------------------------------------------------------------------- */

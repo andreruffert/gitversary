@@ -57,10 +57,6 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* Primary                                                                    */
-/* -------------------------------------------------------------------------- */
-
 .button--primary {
   color: var(--color-white);
   border-color: var(--color-green);
@@ -78,10 +74,6 @@
       inset 0 1px 0 rgb(255 255 255 / 10%);
   }
 }
-
-/* -------------------------------------------------------------------------- */
-/* Quiet                                                                      */
-/* -------------------------------------------------------------------------- */
 
 .button--quiet {
   color: var(--color-muted);
@@ -106,5 +98,59 @@
 
   &:focus-visible {
     outline-offset: 1px;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Toast notifications                                                        */
+/* -------------------------------------------------------------------------- */
+
+toast-queue {
+  width: 300px;
+
+  [data-part="group"] {
+    gap: 0.6rem;
+  }
+
+  [data-part="item"]:is([data-dragging]) {
+    opacity: clamp(0.4, calc(1 - var(--tq-swipe-distance, 0)), 1);
+  }
+
+  [data-part="toast"] {
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-raised);
+    box-shadow: 0 4px 12px rgb(0, 0, 0, 0.1);
+    border-radius: 1rem;
+    padding: 1rem;
+    gap: 1rem;
+    font-size: smaller;
+    flex-wrap: wrap;
+  }
+
+  [data-part="content"] {
+    align-items: flex-start;
+    flex: 1;
+    gap: 0.3rem;
+    min-inline-size: fit-content;
+  }
+
+  [data-part="title"] {
+    font-weight: 600;
+  }
+
+  [data-part="description"] {
+    color: var(--color-muted);
+  }
+
+  [data-part="close-button"] {
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 0.5rem;
+    width: 1.8rem;
+    aspect-ratio: 1;
+    font-weight: 600;
+    cursor: pointer;
   }
 }

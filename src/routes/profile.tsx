@@ -2,13 +2,10 @@ import { Hono } from 'hono';
 import { Layout } from '../components/layout';
 import { getMilestoneData } from '../lib/milestones';
 import { ProfilePage } from '../pages/profile';
-import { renderer } from '../renderer';
 import { generateProfile } from '../services/generate-profile';
 import type { Bindings } from '../types';
 
 export const profile = new Hono<{ Bindings: Bindings }>();
-
-profile.use(renderer);
 
 profile.get('/generate', (c) => {
   const username = c.req.query('username')?.trim();
@@ -59,6 +56,10 @@ profile.get('/:username', async (c) => {
     );
   } catch (error) {
     console.error('Profile generation failed:', error);
+
+    if (error.name === 'GitHubNotFoundError') {
+      return c.notFound();
+    }
 
     return c.text('Unable to generate this Gitversary.', 500);
   }

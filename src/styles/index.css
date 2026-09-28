@@ -8,3 +8,4 @@
 @import url("./pages/home.css") layer(pages);
 @import url("./pages/profile.css") layer(pages);
 @import url("./pages/about.css") layer(pages);
+@import url("./pages/not-found.css") layer(pages);

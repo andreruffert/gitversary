@@ -10,27 +10,24 @@ function createTestEnv(overrides: Record<string, unknown> = {}): Bindings {
 }
 
 describe('global app behavior', () => {
-  it('returns a JSON 404 for unknown routes', async () => {
+  it('returns a 404 page for unknown routes', async () => {
     // A single path segment (e.g. "/foo") matches profile's `/:username`
     // route instead of falling through to the 404 handler, so this needs
     // multiple segments to genuinely miss every registered route.
     const response = await app.request('/this/route/does-not-exist', {}, createTestEnv());
 
     expect(response.status).toBe(404);
-    expect(response.headers.get('Content-Type')).toContain('application/json');
-    expect(await response.json()).toEqual({ error: 'Not found' });
+    expect(response.headers.get('X-Robots-Tag')).toBe('noindex');
+
+    const html = await response.text();
+    expect(html).toContain('404');
+    expect(html).toContain('Page not found');
   });
 
   it('returns 404 without a body for the favicon', async () => {
     const response = await app.request('/favicon.ico', {}, createTestEnv());
 
     expect(response.status).toBe(404);
-  });
-
-  it('sets X-Robots-Tag: noindex on every response', async () => {
-    const response = await app.request('/generate', {}, createTestEnv());
-
-    expect(response.headers.get('X-Robots-Tag')).toBe('noindex');
   });
 
   it('sets a persistent device_id cookie on first visit', async () => {

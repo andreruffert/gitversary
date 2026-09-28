@@ -1,6 +1,6 @@
 {
   "name": "gitversary",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,6 +11,7 @@
     "types": "wrangler types",
     "check": "tsc --noEmit",
     "test": "vitest run",
+    "lint": "biome ci",
     "format": "biome check --write"
   },
   "devDependencies": {
@@ -23,9 +24,12 @@
     "wrangler": "4.126.0"
   },
   "dependencies": {
+    "@github/arianotify-polyfill": "2.4.0",
+    "@github/clipboard-copy-element": "1.3.2",
     "@js-temporal/polyfill": "0.5.1",
     "hono": "4.13.5",
     "jose": "6.2.10",
+    "toast-queue": "1.0.0",
     "vite-ssr-components": "0.6.1"
   },
   "volta": {

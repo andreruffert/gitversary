@@ -1,7 +1,7 @@
 import { html } from 'hono/html';
 import type { PropsWithChildren } from 'hono/jsx';
 import { jsxRenderer } from 'hono/jsx-renderer';
-import { Link, Script } from 'vite-ssr-components/hono';
+import { Link, Script, ViteClient } from 'vite-ssr-components/hono';
 import { APP_DISPLAY_NAME, APP_VERSION } from './constants';
 
 const FAVICON_URL = './favicon.svg?v=91FS85pa';
@@ -56,23 +56,21 @@ export const renderer = jsxRenderer(
               const colorScheme = event.target.value;
               const nextColorScheme = colorScheme === 'light' ? 'dark' : 'light';
 
+              document.documentElement.style.setProperty('color-scheme', colorScheme);
               event.target.setAttribute('aria-label', \`Switch to \${nextColorScheme} color scheme\`);
               event.target.querySelector('svg use').setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', colorScheme === 'light' ? '#icon-sun' : '#icon-moon');
               event.target.querySelector('span').textContent = \`Use \${nextColorScheme} theme\`;
-
-              document.startViewTransition(() => {
-                document.documentElement.style.setProperty('color-scheme', colorScheme);
-              });
             });
           </script>
           <script type="module" async blocking="render" src="https://cdn.jsdelivr.net/npm/color-scheme-switch-element@2/+esm"></script>
         `}
 
         <Link href="/src/styles/index.css" rel="stylesheet" />
-        {/* <ViteClient /> */}
+        <ViteClient />
       </head>
       <body>
         {children}
+        <Script src="/src/client/app.js" />
         {scripts?.map((src) => (
           <Script src={src} />
         ))}
