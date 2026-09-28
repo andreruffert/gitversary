@@ -6,8 +6,6 @@ export function OgImageDefault() {
 
         <h1 class="og-default__title">How long have you been on GitHub?</h1>
 
-        <div class="og-default__accent"></div>
-
         <p class="og-default__description">Enter your username. Let’s find out.</p>
       </div>
 

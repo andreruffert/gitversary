@@ -28,7 +28,7 @@ ogImage.get('/', async (c) => {
   const image = await c.env.IMAGES.get('og/default.webp');
 
   if (!image) {
-    return c.notFound();
+    return notFound(c);
   }
 
   return new Response(image.body, {
@@ -46,7 +46,7 @@ ogImage.get('/:username', async (c) => {
   const profile = await findProfile(c.env.DB, username);
 
   if (!profile) {
-    return c.notFound();
+    return notFound(c);
   }
 
   if (renderFlag === '1') {
@@ -75,13 +75,13 @@ ogImage.get('/:username', async (c) => {
   // R2Bucket.get(null) isn't a supported call, so this would otherwise
   // throw a 500 instead of a clean 404.
   if (!profile.imageKey) {
-    return c.notFound();
+    return notFound(c);
   }
 
   const image = await c.env.IMAGES.get(profile.imageKey);
 
   if (!image) {
-    return c.notFound();
+    return notFound(c);
   }
 
   return new Response(image.body, {
@@ -92,3 +92,9 @@ ogImage.get('/:username', async (c) => {
     },
   });
 });
+
+function notFound(c) {
+  c.header('X-Robots-Tag', 'noindex');
+  c.status(404);
+  return c.text('Page not found');
+}
