@@ -26,13 +26,20 @@ export function Layout({ children }: PropsWithChildren) {
             </color-scheme-switch>
           </section>
           <section>
-            <h2>Source</h2>
+            <h2>Elsewhere</h2>
             <a
               href="https://github.com/andreruffert/gitversary"
               target="_blank"
               rel="noopener noreferrer"
             >
-              View on GitHub
+              Source on GitHub
+            </a>
+            <a
+              href="https://www.producthunt.com/products/gitversary"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Product Hunt
             </a>
           </section>
         </nav>

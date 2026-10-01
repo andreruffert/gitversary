@@ -88,16 +88,26 @@ describe('generateProfile', () => {
       imageYears: 15,
     });
 
-    const user = {
+    const account = {
+      id: 1,
       login: 'octocat',
+      name: 'The Octocat',
+      avatar_url: 'https://github.com/octocat.png',
+      html_url: 'https://github.com/octocat',
+      created_at: '2011-01-25T00:00:00.000Z',
+      public_repos: 10,
+      followers: 100,
+      following: 5,
+      type: 'User' as const,
     };
 
     const stats = {
-      followers: 100,
+      pullRequests: 30,
+      totalCommits: 400,
     };
 
     findProfileMock.mockResolvedValue(null);
-    getGitHubProfileMock.mockResolvedValue({ user, stats });
+    getGitHubProfileMock.mockResolvedValue({ account, stats });
     saveProfileMock.mockResolvedValue(profile);
 
     const env = createEnv();
@@ -108,7 +118,7 @@ describe('generateProfile', () => {
     expect(getGitHubProfileMock).toHaveBeenCalledWith('octocat', env);
 
     expect(saveProfileMock).toHaveBeenCalledOnce();
-    expect(saveProfileMock).toHaveBeenCalledWith(env.DB, user, stats);
+    expect(saveProfileMock).toHaveBeenCalledWith(env.DB, account, stats);
 
     expect(result.source).toBe('github');
     expect(result.profile).toBe(profile);
@@ -125,17 +135,27 @@ describe('generateProfile', () => {
       imageYears: 15,
     });
 
-    const user = {
+    const account = {
+      id: 1,
       login: 'octocat',
+      name: 'The Octocat',
+      avatar_url: 'https://github.com/octocat.png',
+      html_url: 'https://github.com/octocat',
+      created_at: '2011-01-25T00:00:00.000Z',
+      public_repos: 10,
+      followers: 200,
+      following: 5,
+      type: 'User' as const,
     };
 
     const stats = {
-      followers: 200,
+      pullRequests: 50,
+      totalCommits: 600,
     };
 
     findProfileMock.mockResolvedValue(oldProfile);
     isExpiredMock.mockReturnValue(true);
-    getGitHubProfileMock.mockResolvedValue({ user, stats });
+    getGitHubProfileMock.mockResolvedValue({ account, stats });
     saveProfileMock.mockResolvedValue(newProfile);
 
     const env = createEnv();
@@ -143,7 +163,8 @@ describe('generateProfile', () => {
     const result = await generateProfile(env, 'octocat', today);
 
     expect(getGitHubProfileMock).toHaveBeenCalledWith('octocat', env);
-    expect(saveProfileMock).toHaveBeenCalledWith(env.DB, user, stats);
+
+    expect(saveProfileMock).toHaveBeenCalledWith(env.DB, account, stats);
 
     expect(result.source).toBe('github');
     expect(result.profile).toBe(newProfile);

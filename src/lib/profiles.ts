@@ -1,8 +1,9 @@
-import type { GitHubUser, GitHubUserStats } from './github';
+import type { GitHubAccount, GitHubAccountType } from './github';
 
 export type Profile = {
   username: string;
   githubId: number;
+  githubAccountType: GitHubAccountType;
   githubCreatedAt: string;
   githubUrl: string;
   avatarUrl: string;
@@ -38,6 +39,7 @@ const emptyStats = (): Profile['stats'] => ({
 function mapRow(row: {
   username: string;
   github_id: number;
+  github_account_type: GitHubAccountType;
   avatar_url: string;
   github_url: string;
   github_created_at: string;
@@ -51,6 +53,7 @@ function mapRow(row: {
   return {
     username: row.username,
     githubId: row.github_id,
+    githubAccountType: row.github_account_type,
     avatarUrl: row.avatar_url,
     githubUrl: row.github_url,
     githubCreatedAt: row.github_created_at,
@@ -74,6 +77,7 @@ export async function findProfile(db: D1Database, username: string): Promise<Pro
       SELECT
         username,
         github_id,
+        github_account_type,
         avatar_url,
         github_url,
         github_created_at,
@@ -90,6 +94,7 @@ export async function findProfile(db: D1Database, username: string): Promise<Pro
     .first<{
       username: string;
       github_id: number;
+      github_account_type: GitHubAccountType;
       avatar_url: string;
       github_url: string;
       github_created_at: string;
@@ -106,8 +111,8 @@ export async function findProfile(db: D1Database, username: string): Promise<Pro
 
 export async function saveProfile(
   db: D1Database,
-  user: GitHubUser,
-  profileStats: GitHubUserStats,
+  user: GitHubAccount,
+  profileStats: GitHubAccountStats,
   now = new Date(),
 ): Promise<Profile> {
   const updatedAt = now.toISOString();
@@ -135,6 +140,7 @@ export async function saveProfile(
       INSERT INTO profiles (
         username,
         github_id,
+        github_account_type,
         avatar_url,
         github_url,
         github_created_at,
@@ -145,9 +151,10 @@ export async function saveProfile(
         image_years,
         stats_json
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, ?)
       ON CONFLICT(username) DO UPDATE SET
         github_id = excluded.github_id,
+        github_account_type = excluded.github_account_type,
         avatar_url = excluded.avatar_url,
         github_url = excluded.github_url,
         github_created_at = excluded.github_created_at,
@@ -159,15 +166,20 @@ export async function saveProfile(
     .bind(
       user.login,
       user.id,
+      user.type,
       user.avatar_url,
       user.html_url,
-      user.created_at, // github_created_at
-      updatedAt, // created_at: only takes effect on first insert
-      updatedAt, // updated_at
+      user.created_at,
+      updatedAt,
+      updatedAt,
       expiresAt,
       JSON.stringify(stats),
     )
-    .first<{ created_at: string; image_key: string | null; image_years: number | null }>();
+    .first<{
+      created_at: string;
+      image_key: string | null;
+      image_years: number | null;
+    }>();
 
   if (!row) {
     throw new Error('Failed to save profile');
@@ -176,6 +188,7 @@ export async function saveProfile(
   return {
     username: user.login,
     githubId: user.id,
+    githubAccountType: user.type,
     avatarUrl: user.avatar_url,
     githubUrl: user.html_url,
     githubCreatedAt: user.created_at,
