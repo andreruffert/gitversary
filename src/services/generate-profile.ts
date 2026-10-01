@@ -13,9 +13,9 @@ export async function generateProfile(
   let profileChanged = false;
 
   if (!profile || isExpired(profile)) {
-    const { user, stats } = await getGitHubProfile(username, env);
+    const { account, stats } = await getGitHubProfile(username, env);
 
-    profile = await saveProfile(env.DB, user, stats);
+    profile = await saveProfile(env.DB, account, stats);
     profileChanged = true;
   }
 

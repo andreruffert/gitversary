@@ -4,7 +4,9 @@ import { getGitHubInstallationToken } from './github-app';
 const GITHUB_API = 'https://api.github.com';
 const GITHUB_GRAPHQL_API = 'https://api.github.com/graphql';
 
-export type GitHubUser = {
+export type GitHubAccountType = 'User' | 'Organization';
+
+export type GitHubAccount = {
   id: number;
   login: string;
   name: string | null;
@@ -14,9 +16,10 @@ export type GitHubUser = {
   public_repos: number;
   followers: number;
   following: number;
+  type: GitHubAccountType;
 };
 
-export type GitHubUserStats = {
+export type GitHubAccountStats = {
   pullRequests: number;
   totalCommits: number;
 };
@@ -27,7 +30,7 @@ type GitHubError = {
 
 export class GitHubNotFoundError extends Error {
   constructor(username: string) {
-    super(`GitHub user "${username}" was not found`);
+    super(`GitHub account "${username}" was not found`);
     this.name = 'GitHubNotFoundError';
   }
 }
@@ -62,7 +65,37 @@ function githubHeaders(token: string): HeadersInit {
   };
 }
 
-export async function getGitHubUser(username: string, env: Bindings): Promise<GitHubUser> {
+async function handleGitHubError(response: Response, fallbackMessage: string): Promise<never> {
+  let message = fallbackMessage;
+
+  try {
+    const error = (await response.json()) as GitHubError;
+
+    if (error.message) {
+      message = error.message;
+    }
+  } catch {
+    // Ignore invalid error response.
+  }
+
+  if (response.status === 403 || response.status === 429) {
+    const remaining = response.headers.get('x-ratelimit-remaining');
+
+    if (remaining === '0') {
+      const reset = response.headers.get('x-ratelimit-reset');
+
+      throw new GitHubRateLimitError(
+        'GitHub API rate limit exceeded',
+        response.status,
+        reset ? Number(reset) : null,
+      );
+    }
+  }
+
+  throw new GitHubApiError(message, response.status);
+}
+
+export async function getGitHubAccount(username: string, env: Bindings): Promise<GitHubAccount> {
   const token = await getGitHubInstallationToken(env);
 
   const response = await fetch(`${GITHUB_API}/users/${encodeURIComponent(username)}`, {
@@ -74,36 +107,10 @@ export async function getGitHubUser(username: string, env: Bindings): Promise<Gi
   }
 
   if (!response.ok) {
-    let message = `GitHub API returned ${response.status}`;
-
-    try {
-      const error = (await response.json()) as GitHubError;
-
-      if (error.message) {
-        message = error.message;
-      }
-    } catch {
-      // Ignore invalid error response
-    }
-
-    if (response.status === 403 || response.status === 429) {
-      const remaining = response.headers.get('x-ratelimit-remaining');
-
-      if (remaining === '0') {
-        const reset = response.headers.get('x-ratelimit-reset');
-
-        throw new GitHubRateLimitError(
-          'GitHub API rate limit exceeded',
-          response.status,
-          reset ? Number(reset) : null,
-        );
-      }
-    }
-
-    throw new GitHubApiError(message, response.status);
+    return handleGitHubError(response, `GitHub API returned ${response.status}`);
   }
 
-  return response.json() as Promise<GitHubUser>;
+  return response.json() as Promise<GitHubAccount>;
 }
 
 type GitHubGraphQLResponse<T> = {
@@ -112,6 +119,43 @@ type GitHubGraphQLResponse<T> = {
     message: string;
   }>;
 };
+
+async function githubGraphQL<T>(
+  query: string,
+  variables: Record<string, unknown>,
+  token: string,
+): Promise<T> {
+  const response = await fetch(GITHUB_GRAPHQL_API, {
+    method: 'POST',
+    headers: {
+      ...githubHeaders(token),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query,
+      variables,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new GitHubApiError(`GitHub GraphQL API returned ${response.status}`, response.status);
+  }
+
+  const result = (await response.json()) as GitHubGraphQLResponse<T>;
+
+  if (result.errors?.length) {
+    throw new GitHubApiError(
+      result.errors.map((error) => error.message).join(', '),
+      response.status,
+    );
+  }
+
+  if (!result.data) {
+    throw new GitHubApiError('GitHub GraphQL API returned no data', response.status);
+  }
+
+  return result.data;
+}
 
 type GitHubProfileStatsResponse = {
   user: {
@@ -122,8 +166,8 @@ type GitHubProfileStatsResponse = {
   } | null;
 };
 
-const PROFILE_STATS_QUERY = `
-  query GitversaryProfileStats(
+const USER_PROFILE_STATS_QUERY = `
+  query GitversaryUserProfileStats(
     $login: String!
     $from: DateTime!
     $to: DateTime!
@@ -137,48 +181,29 @@ const PROFILE_STATS_QUERY = `
   }
 `;
 
-async function getGitHubProfileStatsForYear(
+async function getGitHubUserStatsForYear(
   username: string,
   year: number,
   token: string,
-): Promise<GitHubUserStats> {
+): Promise<GitHubAccountStats> {
   const from = `${year}-01-01T00:00:00Z`;
   const to = `${year}-12-31T23:59:59Z`;
 
-  const response = await fetch(GITHUB_GRAPHQL_API, {
-    method: 'POST',
-    headers: {
-      ...githubHeaders(token),
-      'Content-Type': 'application/json',
+  const data = await githubGraphQL<GitHubProfileStatsResponse>(
+    USER_PROFILE_STATS_QUERY,
+    {
+      login: username,
+      from,
+      to,
     },
-    body: JSON.stringify({
-      query: PROFILE_STATS_QUERY,
-      variables: {
-        login: username,
-        from,
-        to,
-      },
-    }),
-  });
+    token,
+  );
 
-  if (!response.ok) {
-    throw new GitHubApiError(`GitHub GraphQL API returned ${response.status}`, response.status);
-  }
-
-  const result = (await response.json()) as GitHubGraphQLResponse<GitHubProfileStatsResponse>;
-
-  if (result.errors?.length) {
-    throw new GitHubApiError(
-      result.errors.map((error) => error.message).join(', '),
-      response.status,
-    );
-  }
-
-  if (!result.data?.user) {
+  if (!data.user) {
     throw new GitHubNotFoundError(username);
   }
 
-  const contributions = result.data.user.contributionsCollection;
+  const contributions = data.user.contributionsCollection;
 
   return {
     pullRequests: contributions.totalPullRequestContributions,
@@ -186,11 +211,202 @@ async function getGitHubProfileStatsForYear(
   };
 }
 
+type GitHubOrganizationRepositoriesResponse = {
+  organization: {
+    repositories: {
+      pageInfo: {
+        hasNextPage: boolean;
+        endCursor: string | null;
+      };
+      nodes: Array<{
+        name: string;
+        isFork: boolean;
+        isArchived: boolean;
+        defaultBranchRef: {
+          target: {
+            __typename: string;
+            history?: {
+              totalCount: number;
+            };
+          } | null;
+        } | null;
+      } | null>;
+    };
+  } | null;
+};
+
+const ORGANIZATION_REPOSITORIES_QUERY = `
+  query GitversaryOrganizationRepositories(
+    $login: String!
+    $after: String
+    $from: GitTimestamp!
+    $to: GitTimestamp!
+  ) {
+    organization(login: $login) {
+      repositories(
+        first: 100
+        after: $after
+        isFork: false
+        isArchived: false
+      ) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          name
+          isFork
+          isArchived
+          defaultBranchRef {
+            target {
+              __typename
+              ... on Commit {
+                history(
+                  first: 0
+                  since: $from
+                  until: $to
+                ) {
+                  totalCount
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+type GitHubSearchResponse = {
+  search: {
+    issueCount: number;
+  };
+};
+
+const ORGANIZATION_PULL_REQUESTS_QUERY = `
+  query GitversaryOrganizationPullRequests(
+    $query: String!
+  ) {
+    search(
+      type: ISSUE
+      query: $query
+      first: 1
+    ) {
+      issueCount
+    }
+  }
+`;
+
+async function getGitHubOrganizationCommitCountForYear(
+  organization: string,
+  year: number,
+  token: string,
+): Promise<number> {
+  const from = `${year}-01-01T00:00:00Z`;
+  const to = `${year}-12-31T23:59:59Z`;
+
+  let after: string | null = null;
+  let totalCommits = 0;
+
+  do {
+    const data = await githubGraphQL<GitHubOrganizationRepositoriesResponse>(
+      ORGANIZATION_REPOSITORIES_QUERY,
+      {
+        login: organization,
+        after,
+        from,
+        to,
+      },
+      token,
+    );
+
+    if (!data.organization) {
+      throw new GitHubNotFoundError(organization);
+    }
+
+    for (const repository of data.organization.repositories.nodes) {
+      if (
+        !repository ||
+        repository.isFork ||
+        repository.isArchived ||
+        !repository.defaultBranchRef
+      ) {
+        continue;
+      }
+
+      const target = repository.defaultBranchRef.target;
+
+      if (!target || target.__typename !== 'Commit' || !target.history) {
+        continue;
+      }
+
+      totalCommits += target.history.totalCount;
+    }
+
+    const { pageInfo } = data.organization.repositories;
+
+    after = pageInfo.hasNextPage ? pageInfo.endCursor : null;
+  } while (after);
+
+  return totalCommits;
+}
+
+async function getGitHubOrganizationPullRequestCountForYear(
+  organization: string,
+  year: number,
+  token: string,
+): Promise<number> {
+  const from = `${year}-01-01`;
+  const to = `${year}-12-31`;
+
+  const query = [`org:${organization}`, 'is:pr', `created:${from}..${to}`].join(' ');
+
+  const data = await githubGraphQL<GitHubSearchResponse>(
+    ORGANIZATION_PULL_REQUESTS_QUERY,
+    {
+      query,
+    },
+    token,
+  );
+
+  return data.search.issueCount;
+}
+
+async function getGitHubOrganizationStatsForYear(
+  organization: string,
+  year: number,
+  token: string,
+): Promise<GitHubAccountStats> {
+  const [totalCommits, pullRequests] = await Promise.all([
+    getGitHubOrganizationCommitCountForYear(organization, year, token),
+    getGitHubOrganizationPullRequestCountForYear(organization, year, token),
+  ]);
+
+  return {
+    totalCommits,
+    pullRequests,
+  };
+}
+
+async function getGitHubProfileStatsForYear(
+  username: string,
+  year: number,
+  accountType: GitHubAccountType,
+  token: string,
+): Promise<GitHubAccountStats> {
+  if (accountType === 'Organization') {
+    return getGitHubOrganizationStatsForYear(username, year, token);
+  }
+
+  return getGitHubUserStatsForYear(username, year, token);
+}
+
 export async function getGitHubProfileStats(
   username: string,
   createdAt: string,
+  accountType: GitHubAccountType,
   env: Bindings,
-): Promise<GitHubUserStats> {
+): Promise<GitHubAccountStats> {
   const token = await getGitHubInstallationToken(env);
 
   const currentYear = new Date().getUTCFullYear();
@@ -202,7 +418,7 @@ export async function getGitHubProfileStats(
   );
 
   const yearlyStats = await Promise.all(
-    years.map((year) => getGitHubProfileStatsForYear(username, year, token)),
+    years.map((year) => getGitHubProfileStatsForYear(username, year, accountType, token)),
   );
 
   return yearlyStats.reduce(
@@ -221,14 +437,15 @@ export async function getGitHubProfile(
   username: string,
   env: Bindings,
 ): Promise<{
-  user: GitHubUser;
-  stats: GitHubUserStats;
+  account: GitHubAccount;
+  stats: GitHubAccountStats;
 }> {
-  const user = await getGitHubUser(username, env);
-  const stats = await getGitHubProfileStats(username, user.created_at, env);
+  const account = await getGitHubAccount(username, env);
+
+  const stats = await getGitHubProfileStats(username, account.created_at, account.type, env);
 
   return {
-    user,
+    account,
     stats,
   };
 }
