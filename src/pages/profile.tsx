@@ -1,6 +1,7 @@
 import { BrandMark } from '../components/brand-mark';
 import { Icon } from '../components/icons';
 import { APP_BASE_URL } from '../constants';
+import { absoluteFormatter } from '../lib/datetime';
 import { getMilestoneData } from '../lib/milestones';
 import type { Profile } from '../lib/profiles';
 import { formatJoinedDate, formatNumber } from '../lib/utils';
@@ -39,7 +40,11 @@ export function ProfilePage({ profile, years, bskyShareUrl }: ProfilePageProps) 
               <span>Gitversary</span>
             </div>
 
-            <time class="header-meta" dateTime={profile.githubCreatedAt}>
+            <time
+              class="header-meta"
+              dateTime={profile.githubCreatedAt}
+              title={absoluteFormatter.format(new Date(profile.githubCreatedAt))}
+            >
               Joined {formatJoinedDate(profile.githubCreatedAt)}
             </time>
           </header>
@@ -139,8 +144,11 @@ export function ProfilePage({ profile, years, bskyShareUrl }: ProfilePageProps) 
               <p class="note__label">Public data</p>
 
               <p class="note__text">
-                Based on public GitHub activity. Updated{' '}
-                <time dateTime={profile.updatedAt}>{formatJoinedDate(profile.updatedAt)}</time>.
+                Based on public GitHub activity. Generated{' '}
+                <time dateTime={profile.updatedAt}>
+                  {absoluteFormatter.format(new Date(profile.updatedAt))}
+                </time>
+                .
               </p>
             </div>
           </aside>
