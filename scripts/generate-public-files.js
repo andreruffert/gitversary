@@ -4,6 +4,7 @@ import pkg from '../package.json' with { type: 'json' };
 
 const APP_BASE_URL = pkg.config.baseUrl;
 const SECURITY_TXT_EXPIRES = '2027-10-11T22:05:12.765Z';
+const NOW = new Date();
 
 const files = new Map([
   [
@@ -13,6 +14,7 @@ const files = new Map([
   [
     'robots.txt',
     `User-Agent: *
+Content-Signal: ai-train=no, search=yes, ai-input=no
 Allow: /
 Disallow: /assets/
 
@@ -41,6 +43,15 @@ Gitversary is a web tool for finding a user's GitHub anniversary by entering the
 - [Home](${APP_BASE_URL})
 - [About](${APP_BASE_URL}/about)
 `,
+  ],
+  [
+    'humans.txt',
+    `/* TEAM */
+  Software Engineer: André Ruffert
+  Site: andreruffert.com
+
+/* SITE */
+Last update: ${NOW.toISOString()}`,
   ],
   [
     '.well-known/security.txt',
