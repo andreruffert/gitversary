@@ -1,0 +1,17 @@
+# Gitversary
+
+> Discover how long you've been on GitHub.
+
+Gitversary is a web tool for finding a user's GitHub anniversary by entering their GitHub username.
+
+## Features
+
+- Look up a GitHub user's Gitversary
+- No sign-in required
+- No GitHub connection required
+- Username-based lookup
+
+## Pages
+
+- [Home](https://gitversary.andreruffert.com)
+- [About](https://gitversary.andreruffert.com/about)

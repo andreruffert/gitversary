@@ -1,10 +1,10 @@
 import { Hono } from 'hono';
 import { getCookie, setCookie } from 'hono/cookie';
+import { secureHeaders } from 'hono/secure-headers';
 import { Layout } from './components/layout';
 import { APP_BASE_URL } from './constants';
 import { handleQueue } from './jobs/queue-handler';
 import { NotFoundPage } from './pages/not-found';
-import { renderer } from './renderer';
 import { home } from './routes/home';
 import { ogImage } from './routes/og-image';
 import { profile } from './routes/profile';
@@ -12,10 +12,16 @@ import type { Bindings } from './types';
 
 export const app = new Hono<{ Bindings: Bindings }>();
 
-// JSX renderer
-app.use(renderer);
+// Apply security headers to all responses, including rendered pages and errors.
+app.use(
+  '*',
+  secureHeaders({
+    xFrameOptions: 'DENY',
+    referrerPolicy: 'strict-origin-when-cross-origin',
+  }),
+);
 
-// CPU time profiling
+// CPU time profiling (development only).
 if (!import.meta.env.PROD) {
   app.use('*', async (c, next) => {
     const start = performance.now();
@@ -28,7 +34,7 @@ if (!import.meta.env.PROD) {
   });
 }
 
-// Basic rate limiting
+// Rate-limit application traffic by device and IP.
 app.use('*', async (c, next) => {
   let deviceId = getCookie(c, 'device_id');
 
@@ -54,43 +60,13 @@ app.use('*', async (c, next) => {
   await next();
 });
 
-app.get('/favicon.ico', (c) => c.body(null, 404));
-
-app.get('/robots.txt', (c) => {
-  return c.text(`User-Agent: *
-Allow: /
-Disallow: /assets/
-
-Host: ${APP_BASE_URL}`);
-});
-
-app.get('/llms.txt', (c) => {
-  return c.text(`# Gitversary
-
-> Discover how long you've been on GitHub.
-
-Gitversary is a web tool for finding a user's GitHub anniversary by entering their GitHub username.
-
-## Features
-
-- Look up a GitHub user's Gitversary
-- No sign-in required
-- No GitHub connection required
-- Username-based lookup
-
-## Pages
-
-- [Home](${APP_BASE_URL})
-- [About](${APP_BASE_URL}/about)`);
-});
-
+// Application routes.
 app.route('/og', ogImage);
 app.route('/', home);
 app.route('/', profile);
 
+// Render a consistent, non-indexable 404 page.
 app.notFound((c) => {
-  const origin = new URL(c.req.url).origin;
-
   c.header('X-Robots-Tag', 'noindex');
   c.status(404);
 
@@ -102,7 +78,7 @@ app.notFound((c) => {
       url: c.req.url,
       title: 'Page not found · Gitversary',
       og: {
-        image: `${origin}/og?v=RAmYvVzY`,
+        image: `${APP_BASE_URL}/og?v=RAmYvVzY`,
       },
     },
   );

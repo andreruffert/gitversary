@@ -1,0 +1,7 @@
+User-Agent: *
+Allow: /
+Disallow: /assets/
+
+Sitemap: https://gitversary.andreruffert.com/sitemap.xml
+
+Host: https://gitversary.andreruffert.com

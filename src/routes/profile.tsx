@@ -1,11 +1,16 @@
 import { Hono } from 'hono';
 import { Layout } from '../components/layout';
+import { APP_BASE_URL } from '../constants';
 import { getMilestoneData } from '../lib/milestones';
 import { ProfilePage } from '../pages/profile';
+import { renderer } from '../renderer';
 import { generateProfile } from '../services/generate-profile';
 import type { Bindings } from '../types';
 
 export const profile = new Hono<{ Bindings: Bindings }>();
+
+// JSX renderer
+profile.use(renderer);
 
 profile.get('/generate', (c) => {
   const username = c.req.query('username')?.trim();
@@ -18,7 +23,6 @@ profile.get('/generate', (c) => {
 });
 
 profile.get('/:username', async (c) => {
-  const origin = new URL(c.req.url).origin;
   const username = c.req.param('username');
 
   try {
@@ -33,7 +37,7 @@ profile.get('/:username', async (c) => {
         '',
         '#Gitversary',
         '',
-        `${origin}/${encodeURIComponent(profile.username)}`,
+        `${APP_BASE_URL}/${encodeURIComponent(profile.username)}`,
       ].join('\n'),
     );
 
@@ -50,7 +54,7 @@ profile.get('/:username', async (c) => {
         og: {
           title: `@${profile.username} - ${age.years} years on GitHub · Gitversary`,
           description: milestone?.summary,
-          image: `${origin}/og/${encodeURIComponent(profile.username)}?v=tZD5m2hR`,
+          image: `${APP_BASE_URL}/og/${encodeURIComponent(profile.username)}?v=tZD5m2hR`,
         },
       },
     );

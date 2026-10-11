@@ -82,11 +82,6 @@ describe('GET /generate', () => {
   });
 });
 
-// Requires src/routes/home.ts's `/about` handler to define `origin` (it
-// currently references it without declaring it, which throws a
-// ReferenceError at runtime): add
-//   const origin = new URL(c.req.url).origin;
-// as the first line of the `/about` handler.
 describe('GET /about', () => {
   it('renders the about page', async () => {
     const response = await app.request('/about', {}, createTestEnv());

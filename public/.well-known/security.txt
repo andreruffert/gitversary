@@ -1,0 +1,3 @@
+Contact: https://github.com/andreruffert/gitversary/security/advisories/new
+Expires: 2027-10-11T22:05:12.765Z
+Preferred-Languages: en

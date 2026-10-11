@@ -37,8 +37,6 @@ describe('GET /og', () => {
     vi.clearAllMocks();
   });
 
-  // NOTE: requires the missing `import { OgImageDefault } from '../pages/og-image-default';`
-  // in src/routes/og-image.ts — see the fix at the top of this reply.
   it('renders the default OG markup when render=1', async () => {
     const response = await app.request('/og?render=1', {}, createTestEnv());
 
