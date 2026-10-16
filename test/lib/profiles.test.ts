@@ -127,16 +127,16 @@ describe('saveProfile', () => {
     totalCommits: 400,
   };
 
-  it('writes the profile row and computes an expiry one year out', async () => {
+  it('writes the profile row and computes an expiry based on next anniversary', async () => {
     const { db, bind, prepare } = createDb({
       first: vi.fn().mockResolvedValue({
-        created_at: '2026-01-25T12:00:00.000Z',
+        created_at: '2026-03-01T12:00:00.000Z',
         image_key: null,
         image_years: null,
       }),
     });
 
-    const now = new Date('2026-01-25T12:00:00.000Z');
+    const now = new Date('2026-03-01T12:00:00.000Z');
 
     const result = await saveProfile(db, user, stats, now);
 
@@ -146,9 +146,9 @@ describe('saveProfile', () => {
       avatarUrl: 'https://github.com/octocat.png',
       githubUrl: 'https://github.com/octocat',
       githubCreatedAt: '2011-01-25T00:00:00.000Z',
-      createdAt: '2026-01-25T12:00:00.000Z',
-      updatedAt: '2026-01-25T12:00:00.000Z',
-      expiresAt: '2027-01-25T12:00:00.000Z',
+      createdAt: '2026-03-01T12:00:00.000Z',
+      updatedAt: '2026-03-01T12:00:00.000Z',
+      expiresAt: '2027-01-25T00:00:00.000Z',
       imageKey: null,
       imageYears: null,
       stats: {
@@ -167,9 +167,9 @@ describe('saveProfile', () => {
       'https://github.com/octocat.png',
       'https://github.com/octocat',
       '2011-01-25T00:00:00.000Z',
-      '2026-01-25T12:00:00.000Z',
-      '2026-01-25T12:00:00.000Z',
-      '2027-01-25T12:00:00.000Z',
+      '2026-03-01T12:00:00.000Z',
+      '2026-03-01T12:00:00.000Z',
+      '2027-01-25T00:00:00.000Z',
       JSON.stringify({
         publicRepos: 10,
         followers: 20,

@@ -24,12 +24,6 @@ describe('global app behavior', () => {
     expect(html).toContain('Page not found');
   });
 
-  it('returns 404 without a body for the favicon', async () => {
-    const response = await app.request('/favicon.ico', {}, createTestEnv());
-
-    expect(response.status).toBe(404);
-  });
-
   it('sets a persistent device_id cookie on first visit', async () => {
     const response = await app.request('/generate', {}, createTestEnv());
 

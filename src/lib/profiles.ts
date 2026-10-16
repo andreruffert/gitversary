@@ -1,3 +1,4 @@
+import { Temporal } from '@js-temporal/polyfill';
 import type { GitHubUser, GitHubUserStats } from './github';
 
 export type Profile = {
@@ -20,11 +21,39 @@ export type Profile = {
   expiresAt: string;
 };
 
-function getExpiryDate(now = new Date()): Date {
-  const expiresAt = new Date(now);
-  expiresAt.setUTCFullYear(expiresAt.getUTCFullYear() + 1);
+function getNextAnniversary(createdAt) {
+  const created = Temporal.Instant.from(createdAt).toZonedDateTimeISO('UTC');
 
-  return expiresAt;
+  const today = Temporal.Now.plainDateISO('UTC');
+
+  const getAnniversary = (year) =>
+    Temporal.PlainDate.from(
+      {
+        year,
+        month: created.month,
+        day: created.day,
+      },
+      { overflow: 'constrain' },
+    ).toZonedDateTime({
+      timeZone: 'UTC',
+      plainTime: Temporal.PlainTime.from({
+        hour: created.hour,
+        minute: created.minute,
+        second: created.second,
+        millisecond: created.millisecond,
+      }),
+    });
+
+  const year = today.year;
+  let anniversary = getAnniversary(year);
+
+  if (Temporal.Instant.compare(anniversary.toInstant(), Temporal.Now.instant()) < 0) {
+    anniversary = getAnniversary(year + 1);
+  }
+
+  return anniversary.toInstant().toString({
+    fractionalSecondDigits: 3,
+  });
 }
 
 const emptyStats = (): Profile['stats'] => ({
@@ -111,7 +140,7 @@ export async function saveProfile(
   now = new Date(),
 ): Promise<Profile> {
   const updatedAt = now.toISOString();
-  const expiresAt = getExpiryDate(now).toISOString();
+  const expiresAt = getNextAnniversary(user.created_at);
 
   const stats: Profile['stats'] = {
     publicRepos: user.public_repos,
