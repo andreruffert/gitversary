@@ -10,6 +10,25 @@ type Milestone = {
 
 const GITVERSARY_MILESTONES: Milestone[] = [
   {
+    minYears: 0,
+    status: 'INITIALIZED',
+    badge: 'Hello, World!',
+    tier: 'rookie',
+    title: 'GitHub Newcomer',
+    summary:
+      'Every developer starts somewhere, and every GitHub journey has a first chapter. Whether you just created your account or have already started building, your story is only getting started.',
+    sayings: [
+      'Every legend starts somewhere.',
+      'New account. Unlimited possibilities.',
+      'Your next commit could change everything.',
+      'The README is just the beginning.',
+      'Welcome to the rabbit hole.',
+      'Your contribution graph awaits.',
+      'One account. A million things to build.',
+      'Fork it. Break it. Learn from it.',
+    ],
+  },
+  {
     minYears: 1,
     status: 'LGTM',
     badge: 'README Rookie',
