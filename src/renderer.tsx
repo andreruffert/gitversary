@@ -4,7 +4,7 @@ import { jsxRenderer } from 'hono/jsx-renderer';
 import { Link, Script, ViteClient } from 'vite-ssr-components/hono';
 import { APP_DISPLAY_NAME, APP_VERSION } from './constants';
 
-const FAVICON_URL = './favicon.svg?v=91FS85pa';
+const FAVICON_URL = '/favicon.svg?v=91FS85pa';
 
 interface RendererProps {
   url: string;
@@ -33,7 +33,7 @@ export const renderer = jsxRenderer(
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{title}</title>
         <meta name="description" content={description} />
-        <link rel="icon" type="image/svg+xml" href={FAVICON_URL} />
+        <link rel="icon" href={FAVICON_URL} type="image/svg+xml" />
         <link rel="canonical" href={url} />
 
         <meta name="version" content={APP_VERSION} />
