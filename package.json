@@ -18,7 +18,7 @@
     "format": "biome check --write"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.10",
+    "@biomejs/biome": "2.6.5",
     "@cloudflare/vite-plugin": "1.64.0",
     "@types/node": "26.6.6",
     "typescript": "7.0.2",
