@@ -22,7 +22,7 @@
     "@cloudflare/vite-plugin": "1.64.0",
     "@types/node": "26.6.6",
     "typescript": "7.0.2",
-    "vite": "8.3.2",
+    "vite": "8.3.6",
     "vitest": "4.1.11",
     "wrangler": "4.147.0"
   },
